@@ -8,7 +8,7 @@ function App() {
       <div>
         <Appbar/>
       </div>
-      <div  style={{marginTop: 50}}>
+      <div  style={{marginTop: 30}}>
         <UserForm/>
       </div>
     </div>
