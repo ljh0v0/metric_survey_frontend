@@ -29,7 +29,7 @@ export default function UserForm() {
     }
 
     function addQIndex(){
-        if (qIndex===questionsList.length-1){
+        if (qIndex>=questionsList.length-1){
             localStorage.removeItem("email")
             window.location.href="/thanks";
         }else{
@@ -38,7 +38,7 @@ export default function UserForm() {
     }
 
     function minusQIndex(){
-        if (qIndex===0){
+        if (qIndex<=0){
             return
         }else{
             setQIndex(qIndex-1)
@@ -46,7 +46,8 @@ export default function UserForm() {
     }
 
     useEffect(()=>{
-        fetch("http://localhost:8080/questions/getAll")
+        fetch("http://18.224.135.27:8080/questions/getAll")
+        //fetch("http://localhost:8080/questions/getAll")
         .then(res=>res.json())
         .then((result)=>{
             if (result.code === 0){

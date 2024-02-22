@@ -30,7 +30,8 @@ export default function Question({currentQuestion, addQIndex, minusQIndex}) {
     useEffect(()=>{
             if (prevPropsRef.current) {
                 if (JSON.stringify(prevPropsRef.current.currentQuestion) !== JSON.stringify(currentQuestion)) {
-                    fetch("http://localhost:8080/questions/" + currentQuestion.questionId)
+                    fetch("http://18.224.135.27:8080/questions/" + currentQuestion.questionId)
+                    //fetch("http://localhost:8080/questions/" + currentQuestion.questionId)
                     .then(res=>res.json())
                     .then((result)=>{
                         console.log(result)
@@ -64,7 +65,8 @@ export default function Question({currentQuestion, addQIndex, minusQIndex}) {
             window.location.href="/";
         }else{
             console.log(emailAdd)
-            fetch("http://localhost:8080/answers/add", {
+            fetch("http://18.224.135.27:8080/answers/add", {
+            //fetch("http://localhost:8080/answers/add", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -105,31 +107,17 @@ export default function Question({currentQuestion, addQIndex, minusQIndex}) {
           </Typography>
         </CardContent>
         <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
                 <Card elevation={0}>
                     <CardMedia
                         component="iframe"
                         height="256"
-                        src={question.v1Url}
+                        src={question.videoUrl}
                         controls
                         autoPlay
                     />
                     <CardContent>
-                        Video 1
-                    </CardContent>
-                </Card>
-            </Grid>
-            <Grid item xs={6}>
-                <Card elevation={0}>
-                    <CardMedia
-                        component="iframe"
-                        height="256"
-                        src={question.v2Url}
-                        controls
-                        autoPlay
-                    />
-                    <CardContent>
-                        Video 1
+                        Video 1 (left) vs. Video 2 (right)
                     </CardContent>
                 </Card>
             </Grid>
