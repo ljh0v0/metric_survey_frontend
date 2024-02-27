@@ -1,4 +1,5 @@
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
@@ -18,12 +19,41 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
 
+function LinearProgressWithLabel(props) {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ width: '100%', mr: 1 }}>
+          <LinearProgress variant="determinate" value={props.current / props.total * 100} />
+        </Box>
+        <Box sx={{ minWidth: 35 }}>
+          <Typography variant="body2" color="text.secondary">
+          {props.current} / {props.total}
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
+  
+  LinearProgressWithLabel.propTypes = {
+    /**
+     * The value of the progress indicator for the determinate and buffer variants.
+     * Value between 0 and 100.
+     */
+    current: PropTypes.number.isRequired,
+    total: PropTypes.number.isRequired,
+  };
 
-export default function Question({currentQuestion, addQIndex, minusQIndex}) {
+export default function Question({currentQuestion, addQIndex, minusQIndex, currentId, totalIds}) {
     const prevPropsRef = React.useRef();
     const[question, setQuestion]=useState([])
-    const[answer, setAnswer]=useState("0")
+    const[v1Url, setV1Url]=useState("")
+    const[v2Url, setV2Url]=useState("")
+    const[v3Url, setV3Url]=useState("")
+    const[answer1, setAnswer1]=useState(0)
+    const[answer2, setAnswer2]=useState(0)
+    const[answer3, setAnswer3]=useState(0)
     const[open, setOpen]=useState(false)
     const[alertText, setAlertText]=useState("")
 
@@ -36,6 +66,9 @@ export default function Question({currentQuestion, addQIndex, minusQIndex}) {
                     .then((result)=>{
                         console.log(result)
                         setQuestion(result.data);
+                        setV1Url(result.data.videoUrls[0])
+                        setV2Url(result.data.videoUrls[1])
+                        setV3Url(result.data.videoUrls[2])
                     }
                     )
                 }
@@ -50,11 +83,20 @@ export default function Question({currentQuestion, addQIndex, minusQIndex}) {
     const handleNext = (e) => {
         e.preventDefault();
         addQIndex();
+        setOpen(false);
     }
 
     const handlePrev = (e) => {
         e.preventDefault();
         minusQIndex();
+    }
+
+    const calcMode = (answer1, answer2, answer3) => {
+        if(answer1 === answer2){
+            return answer1
+        }else{
+            return answer3
+        }
     }
 
     const handleSubmit = (e) => {
@@ -64,7 +106,7 @@ export default function Question({currentQuestion, addQIndex, minusQIndex}) {
         if (emailAdd === null){
             window.location.href="/";
         }else{
-            console.log(emailAdd)
+            let answer = calcMode(answer1, answer2, answer3)
             fetch("http://18.224.135.27:8080/answers/add", {
             //fetch("http://localhost:8080/answers/add", {
                 method: 'POST',
@@ -79,7 +121,7 @@ export default function Question({currentQuestion, addQIndex, minusQIndex}) {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
+                console.log(answer)
                 if (data.code === 0){
                     setOpen(true)
                     setAlertText(data.msg)
@@ -99,55 +141,97 @@ export default function Question({currentQuestion, addQIndex, minusQIndex}) {
     }
 
   return (
-    <Card>
+    <Card elevation={0}>
         <Box sx={{ pb: 3,}}>
         <CardContent>
           <Typography component="div" variant="h5">
             Question {question.questionId}
+            <LinearProgressWithLabel current={currentId} total={totalIds} />
           </Typography>
         </CardContent>
         <Grid container spacing={2}>
-            <Grid item xs={12}>
+        <Grid item xs={12}>
+        <form>
                 <Card elevation={0}>
                     <CardMedia
                         component="iframe"
-                        height="256"
-                        src={question.videoUrl}
+                        sx={{ width: 512, height: 256, display: 'inline',}}
+                        src={v1Url}
+                        autoPlay
+                    />
+                    <CardContent>
+                        Video 1 (left) vs. Video 2 (right)   
+                    </CardContent>
+                    <FormControl>
+                        <FormLabel id="group-label">Which video is better?</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-labelledby="group-label"
+                                name="row-radio-buttons-group"
+                                value={answer1}
+                                onChange={(e)=>setAnswer1(e.target.value)}
+                            >
+                                <FormControlLabel value={0} control={<Radio />} label="Video 1" />
+                                <FormControlLabel value={1} control={<Radio />} label="Video 2" />
+                            </RadioGroup>        
+                        </FormControl>
+                </Card>  
+                <Card elevation={0}>
+                    <CardMedia
+                        component="iframe"
+                        sx={{ width: 512, height: 256, display: 'inline',}}
+                        src={v2Url}
                         controls
                         autoPlay
                     />
                     <CardContent>
-                        Video 1 (left) vs. Video 2 (right)
+                        Video 1 (left) vs. Video 2 (right)    
                     </CardContent>
-                </Card>
-            </Grid>
-            <Grid item xs={12}>
-                <form>
                     <FormControl>
                         <FormLabel id="group-label">Which video is better?</FormLabel>
-                        <RadioGroup
-                            row
-                            aria-labelledby="group-label"
-                            name="row-radio-buttons-group"
-                            value={answer}
-                            onChange={(e)=>setAnswer(e.target.value)}
-                        >
-                            <FormControlLabel value="0" control={<Radio />} label="Video 1" />
-                            <FormControlLabel value="1" control={<Radio />} label="Video 2" />
-                        </RadioGroup>
-                        <div>
-                            <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined" onClick={handlePrev}>
-                                previous
-                            </Button>
-                            <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined" onClick={handleSubmit}>
-                                Save and Next
-                            </Button>
-                            <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined" onClick={handleNext}>
-                                Next
-                            </Button>
-                        </div>                   
-                    </FormControl>
-                </form>
+                            <RadioGroup
+                                row
+                                aria-labelledby="group-label"
+                                name="row-radio-buttons-group"
+                                value={answer2}
+                                onChange={(e)=>setAnswer2(e.target.value)}
+                            >
+                                <FormControlLabel value="0" control={<Radio />} label="Video 1" />
+                                <FormControlLabel value="1" control={<Radio />} label="Video 2" />
+                            </RadioGroup>        
+                        </FormControl>
+                </Card>   
+                <Card elevation={0}>
+                    <CardMedia
+                        component="iframe"
+                        sx={{ width: 512, height: 256, display: 'inline',}}
+                        src={v3Url}
+                        controls
+                        autoPlay
+                    />
+                    <CardContent>
+                        Video 1 (left) vs. Video 2 (right)    
+                    </CardContent>
+                    <FormControl>
+                        <FormLabel id="group-label">Which video is better?</FormLabel>
+                            <RadioGroup
+                                row
+                                aria-labelledby="group-label"
+                                name="row-radio-buttons-group"
+                                value={answer3}
+                                onChange={(e)=>setAnswer3(e.target.value)}
+                            >
+                                <FormControlLabel value="0" control={<Radio />} label="Video 1" />
+                                <FormControlLabel value="1" control={<Radio />} label="Video 2" />
+                            </RadioGroup>        
+                        </FormControl>
+                </Card>   
+                <div>
+                <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined" onClick={handleSubmit}>
+                    Save and Next
+                </Button>  
+                </div>         
+            </form>
             </Grid>
         </Grid>
 
@@ -166,7 +250,7 @@ export default function Question({currentQuestion, addQIndex, minusQIndex}) {
             </DialogContentText>
             </DialogContent>
             <DialogActions>
-            <Button onClick={handleClose}>Close</Button>
+            <Button onClick={handleNext}>skip question</Button>
             </DialogActions>
         </Dialog>
         </Box>

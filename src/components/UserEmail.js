@@ -11,7 +11,7 @@ export const validEmail = new RegExp(
     '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
  );
 
-export default function UserEmail({handleEmailChange}) {
+export default function UserEmail() {
     const[email, setEmail]=useState("")
     const[error, setValid]=useState(false)
     const[helperText, setHelperText]=useState("")

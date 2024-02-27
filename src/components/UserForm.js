@@ -15,17 +15,11 @@ import Button from '@mui/material/Button';
 export default function UserForm() {
     const[questionsList,setQuestionsList]=useState([])
     const[qIndex,setQIndex]=useState(0)
-    const[emailAdd, setEmailAdd]=useState("form")
     const[open, setOpen]=useState(false)
     const[alertText, setAlertText]=useState("")
 
     function handleClose(){
         setOpen(false)
-    }
-
-    function handleEmailChange(value){
-        console.log(value)
-        setEmailAdd(value)
     }
 
     function addQIndex(){
@@ -73,9 +67,14 @@ export default function UserForm() {
             <Paper>
                 <Router>
                     <Routes>
-                    <Route path="/" element={<UserEmail handleEmailChange={handleEmailChange}></UserEmail>}></Route>
+                    <Route path="/" element={<UserEmail></UserEmail>}></Route>
                     <Route path="/survey" exact 
-                    element={<Question currentQuestion={questionsList[qIndex]} addQIndex={addQIndex} minusQIndex={minusQIndex}></Question>}>
+                    element={<Question 
+                    currentQuestion={questionsList[qIndex]} 
+                    addQIndex={addQIndex} 
+                    minusQIndex={minusQIndex} 
+                    currentId={qIndex}
+                    totalIds={questionsList.length}></Question>}>
                     </Route>
                     <Route path="/thanks" element={<ThanksPage></ThanksPage>}></Route>
                     </Routes>
