@@ -60,7 +60,7 @@ export default function Question({currentQuestion, addQIndex, minusQIndex, curre
     useEffect(()=>{
             if (prevPropsRef.current) {
                 if (JSON.stringify(prevPropsRef.current.currentQuestion) !== JSON.stringify(currentQuestion)) {
-                    fetch("http://18.224.135.27:8080/questions/" + currentQuestion.questionId)
+                    fetch("http://3.128.234.246:8080/questions/" + currentQuestion.questionId)
                     //fetch("http://localhost:8080/questions/" + currentQuestion.questionId)
                     .then(res=>res.json())
                     .then((result)=>{
@@ -101,13 +101,13 @@ export default function Question({currentQuestion, addQIndex, minusQIndex, curre
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(question.questionId)
+        //console.log(question.questionId)
         let emailAdd = localStorage.getItem("email")
         if (emailAdd === null){
             window.location.href="/";
         }else{
             let answer = calcMode(answer1, answer2, answer3)
-            fetch("http://18.224.135.27:8080/answers/add", {
+            fetch("http://3.128.234.246:8080/answers/add", {
             //fetch("http://localhost:8080/answers/add", {
                 method: 'POST',
                 headers: {
@@ -121,7 +121,7 @@ export default function Question({currentQuestion, addQIndex, minusQIndex, curre
             })
             .then(response => response.json())
             .then(data => {
-                console.log(answer)
+                //console.log(answer)
                 if (data.code === 0){
                     setOpen(true)
                     setAlertText(data.msg)
@@ -133,7 +133,7 @@ export default function Question({currentQuestion, addQIndex, minusQIndex, curre
                 }
             })
             .catch((error) => {
-                console.error('Error:', error);
+                //console.error('Error:', error);
                 setOpen(true)
                 setAlertText("An unknown error occurred. Please contact me with johannahliew@gmail.com.")
             });
@@ -155,8 +155,10 @@ export default function Question({currentQuestion, addQIndex, minusQIndex, curre
                 <Card elevation={0}>
                     <CardMedia
                         component="iframe"
-                        sx={{ width: 512, height: 256, display: 'inline',}}
+                        //sx={{ width: 700, height: 256, display: 'inline',}}
+                        height={256}
                         src={v1Url}
+                        controls
                         autoPlay
                     />
                     <CardContent>
@@ -179,7 +181,8 @@ export default function Question({currentQuestion, addQIndex, minusQIndex, curre
                 <Card elevation={0}>
                     <CardMedia
                         component="iframe"
-                        sx={{ width: 512, height: 256, display: 'inline',}}
+                        //sx={{ width: 700, height: 256, display: 'inline',}}
+                        height={256}
                         src={v2Url}
                         controls
                         autoPlay
@@ -204,7 +207,8 @@ export default function Question({currentQuestion, addQIndex, minusQIndex, curre
                 <Card elevation={0}>
                     <CardMedia
                         component="iframe"
-                        sx={{ width: 512, height: 256, display: 'inline',}}
+                        //sx={{ width: 700, height: 256, display: 'inline',}}
+                        height={256}
                         src={v3Url}
                         controls
                         autoPlay

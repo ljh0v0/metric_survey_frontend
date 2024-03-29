@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 import Question from './Question';
-import Paper from '@mui/material/Paper';
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-import ThanksPage from './ThanksPage';
-import UserEmail from './UserEmail';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,9 +8,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 
-export default function UserForm() {
+
+export default function UserForm({addQIndex, minusQIndex, qIndex, setLength}) {
     const[questionsList,setQuestionsList]=useState([])
-    const[qIndex,setQIndex]=useState(0)
     const[open, setOpen]=useState(false)
     const[alertText, setAlertText]=useState("")
 
@@ -22,25 +18,8 @@ export default function UserForm() {
         setOpen(false)
     }
 
-    function addQIndex(){
-        if (qIndex>=questionsList.length-1){
-            localStorage.removeItem("email")
-            window.location.href="/thanks";
-        }else{
-            setQIndex(qIndex+1)
-        }
-    }
-
-    function minusQIndex(){
-        if (qIndex<=0){
-            return
-        }else{
-            setQIndex(qIndex-1)
-        }
-    }
-
     useEffect(()=>{
-        fetch("http://18.224.135.27:8080/questions/getAll")
+        fetch("http://3.128.234.246:8080/questions/getAll")
         //fetch("http://localhost:8080/questions/getAll")
         .then(res=>res.json())
         .then((result)=>{
@@ -50,6 +29,7 @@ export default function UserForm() {
             }else if (result.code === 1){
                 console.log(result)
                 setQuestionsList(result.data);
+                setLength(result.data.length);
             }else{
                 setOpen(true)
                 setAlertText("An unknown error occurred. Please contact me with johannahliew@gmail.com.")
@@ -64,23 +44,13 @@ export default function UserForm() {
 
     return (
         <Container>
-            <Paper>
-                <Router>
-                    <Routes>
-                    <Route path="/" element={<UserEmail></UserEmail>}></Route>
-                    <Route path="/survey" exact 
-                    element={<Question 
-                    currentQuestion={questionsList[qIndex]} 
-                    addQIndex={addQIndex} 
-                    minusQIndex={minusQIndex} 
-                    currentId={qIndex}
-                    totalIds={questionsList.length}></Question>}>
-                    </Route>
-                    <Route path="/thanks" element={<ThanksPage></ThanksPage>}></Route>
-                    </Routes>
-                </Router>
-            </Paper>
-
+            <Question 
+                currentQuestion={questionsList[qIndex]} 
+                addQIndex={addQIndex} 
+                minusQIndex={minusQIndex} 
+                currentId={qIndex}
+                totalIds={questionsList.length}>
+            </Question>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -98,8 +68,7 @@ export default function UserForm() {
                 <DialogActions>
                 <Button onClick={handleClose}>Close</Button>
                 </DialogActions>
-            </Dialog>
-            
+            </Dialog>   
         </Container>
     );
 }

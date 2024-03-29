@@ -1,6 +1,6 @@
 import './App.css';
 import Appbar from './components/Appbar';
-import UserForm from './components/UserForm';
+import Survey from './components/Survey';
 
 function App() {
   return (
@@ -9,7 +9,7 @@ function App() {
         <Appbar/>
       </div>
       <div  style={{marginTop: 30, marginBottom: 30}}>
-        <UserForm/>
+        <Survey/>
       </div>
     </div>
   );
